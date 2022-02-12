@@ -1,4 +1,5 @@
 #include "minivan.h"
+#include "features/caps_word.h"
 
 #define SFT_TAB LSFT(KC_TAB)
 #define LT2_TAB LT(2, KC_TAB)
@@ -20,6 +21,10 @@ qk_tap_dance_action_t tap_dance_actions[] = {
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  if (!process_caps_word(keycode, record)) {
+    return false;
+  }
+
   if (record->event.pressed) {
     switch(keycode) {
       case M_IME:

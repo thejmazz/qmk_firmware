@@ -137,7 +137,7 @@ void process_indicator_update(layer_state_t state, uint8_t usb_led) {
     setrgb(97, 213, 84, (LED_TYPE *)&led[1]);
   }
 
-  if (usb_led & (1<<USB_LED_CAPS_LOCK)) {
+  if (usb_led & (1<<USB_LED_CAPS_LOCK) || caps_word_get()) {
     setrgb(255, 78, 79, (LED_TYPE *)&led[2]);
   }
 
@@ -151,6 +151,15 @@ void keyboard_post_init_user(void) {
 void led_set_user(uint8_t usb_led) {
   process_indicator_update(layer_state, host_keyboard_leds());
 };
+
+void caps_word_set_user(bool active) {
+  if (active) {
+    setrgb(255, 78, 79, (LED_TYPE *)&led[2]);
+    rgblight_set();
+  } else {
+    process_indicator_update(layer_state, host_keyboard_leds());
+  }
+}
 
 layer_state_t layer_state_set_user(layer_state_t state) {
   process_indicator_update(state, host_keyboard_leds());

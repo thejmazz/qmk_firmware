@@ -33,21 +33,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       case M_IME:
         SEND_STRING(SS_DOWN(X_LSHIFT)SS_DOWN(X_LALT));
         return false;
-      case M_LSFT:
-        key_timer = timer_read();
-        register_code(KC_LSFT);
-        return false;
+      case LSFT_T(M_LSFT):
+        if (record->tap.count) {
+            caps_word_set(!caps_word_get());
+            return false;
+        }
+        break;
     }
   } else {
     switch(keycode) {
       case M_IME:
         SEND_STRING(SS_UP(X_LSHIFT)SS_UP(X_LALT));
-        return false;
-      case M_LSFT:
-        unregister_code(KC_LSFT);
-        if (timer_elapsed(key_timer) < 125) {
-          caps_word_set(!caps_word_get());
-        }
         return false;
     }
   }
@@ -68,7 +64,7 @@ bool caps_word_press_user(uint16_t keycode) {
     case KC_UNDS:
       return true;
 
-    case M_LSFT:
+    case LSFT_T(M_LSFT):
       return true;
 
     default:
@@ -80,7 +76,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT(
     KC_ESC ,     KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,  KC_BSPC,
     LT2_TAB,     KC_A,     KC_S,     KC_D,     KC_F,     KC_G,     KC_H,     KC_J,     KC_K,     KC_L,  KC_SCLN,  KC_MINS,
-    M_LSFT,     KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,  KC_COMM,   KC_DOT,  KC_SLSH, T_SFT_QT,
+    LSFT_T(M_LSFT),     KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,  KC_COMM,   KC_DOT,  KC_SLSH, T_SFT_QT,
     KC_LCTL,  KC_LGUI,  KC_LALT,    TO(1),       LT3_ENT     ,       LT2_SPC     ,    TG(3),  KC_RSFT,  KC_RCTL,    TG(4)
   ),
   [1] = LAYOUT(

@@ -9,7 +9,8 @@
 #define T_SFT_QT RSFT_T(KC_QUOT)
 
 enum custom_keycodes {
-  M_IME = SAFE_RANGE
+  M_IME = SAFE_RANGE,
+  M_LSFT
 };
 
 enum {
@@ -19,6 +20,8 @@ enum {
 qk_tap_dance_action_t tap_dance_actions[] = {
   [TD_SFT_L3] = ACTION_TAP_DANCE_LAYER_TOGGLE(KC_LSFT, 3),
 };
+
+uint16_t key_timer;
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   if (!process_caps_word(keycode, record)) {
@@ -30,23 +33,54 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       case M_IME:
         SEND_STRING(SS_DOWN(X_LSHIFT)SS_DOWN(X_LALT));
         return false;
+      case M_LSFT:
+        key_timer = timer_read();
+        register_code(KC_LSFT);
+        return false;
     }
   } else {
     switch(keycode) {
       case M_IME:
         SEND_STRING(SS_UP(X_LSHIFT)SS_UP(X_LALT));
         return false;
+      case M_LSFT:
+        unregister_code(KC_LSFT);
+        if (timer_elapsed(key_timer) < 125) {
+          caps_word_set(!caps_word_get());
+        }
+        return false;
     }
   }
   return true;
 };
 
+bool caps_word_press_user(uint16_t keycode) {
+  switch (keycode) {
+    // Keycodes that continue Caps Word, with shift applied.
+    case KC_A ... KC_Z:
+      add_weak_mods(MOD_BIT(KC_LSFT));  // Apply shift to the next key.
+      return true;
+
+    // Keycodes that continue Caps Word, without shifting.
+    case KC_1 ... KC_0:
+    case KC_BSPC:
+    case KC_MINS:
+    case KC_UNDS:
+      return true;
+
+    case M_LSFT:
+      return true;
+
+    default:
+      return false;  // Deactivate Caps Word.
+  }
+}
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT(
     KC_ESC ,     KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,  KC_BSPC,
     LT2_TAB,     KC_A,     KC_S,     KC_D,     KC_F,     KC_G,     KC_H,     KC_J,     KC_K,     KC_L,  KC_SCLN,  KC_MINS,
-    /* KC_LSFT,     KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,  KC_COMM,   KC_DOT,  KC_SLSH, T_SFT_QT, */
-    TD(TD_SFT_L3),     KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,  KC_COMM,   KC_DOT,  KC_SLSH, T_SFT_QT,
+    M_LSFT,     KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,  KC_COMM,   KC_DOT,  KC_SLSH, T_SFT_QT,
     KC_LCTL,  KC_LGUI,  KC_LALT,    TO(1),       LT3_ENT     ,       LT2_SPC     ,    TG(3),  KC_RSFT,  KC_RCTL,    TG(4)
   ),
   [1] = LAYOUT(

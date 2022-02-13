@@ -8,6 +8,27 @@
 #define LT3_ENT LT(3, KC_ENT)
 #define T_SFT_QT RSFT_T(KC_QUOT)
 
+// Brightness up/down KC_BRMU, KC_BRMD
+// Printscreen KC_PSCR
+// Keypad enter KC_PENT
+// Media next, prev, stop, play/pause KC_MNXT, KC_MPRV, KC_MSTP, KC_MPLY
+// Mouse cursor KC_MS_U, KC_MS_D, KC_MS_L, KC_MS_R
+// Mouse buttons KC_BTN1, KC_BTN2, KC_BTN3, KC_BTN4, KC_BTN5
+// Mouse wheel KC_WH_U, KC_WH_D, KC_WH_L, KC_WH_R
+// Mods LCTL(kc), LSFT(kc), LALT(kc), LGUI(kc)
+// Double mods
+//             SFT   CTL   GUI   ALT
+// RCS(kc)   - SFT   CTL
+// L/RSG(kc) - SFT         GUI
+// L/RSA(kc) - SFT               ALT
+// LCA(kc)   -       CTL         ALT
+// L/RAG(kc) -             GUI   ALT
+// LCAG(kc)  -       CTL   GUI   ALT
+// MEH(kc)   - SFT   CTL         ALT
+// HYPR(kc)  - SFT   CTL   GUI   ALT
+// KC_MEH    - SFT   CTL         ALT
+// KC_HYPR   - SFT   CTL   GUI   ALT
+
 enum custom_keycodes {
   M_IME = SAFE_RANGE,
   M_LSFT
@@ -79,7 +100,8 @@ bool caps_word_press_user(uint16_t keycode) {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT(
     KC_ESC ,     KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,  KC_BSPC,
-    LT2_TAB,     KC_A,     KC_S,     KC_D,     KC_F,     KC_G,     KC_H,     KC_J,     KC_K,     KC_L,  KC_SCLN,  KC_MINS,
+    /* LT2_TAB,     KC_A,     KC_S,     KC_D,     KC_F,     KC_G,     KC_H,     KC_J,     KC_K,     KC_L,  KC_SCLN,   KC_ENT, */
+    LT2_TAB,     KC_A,     KC_S,     KC_D,     KC_F,     KC_G,     KC_H,     KC_J,     KC_K,     KC_L,  KC_SCLN,   KC_NO,
     M_LSFT,     KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,  KC_COMM,   KC_DOT,  KC_SLSH, T_SFT_QT,
     KC_LCTL,  KC_LGUI,  KC_LALT,    TO(1),       LT3_ENT     ,       LT2_SPC     ,    TG(3),  KC_RSFT,  KC_RCTL,    TG(4)
   ),
@@ -90,14 +112,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_LCTL,  KC_LGUI,  KC_LALT,    TO(0),       LT3_SPC     ,       LT2_SPC     ,    TG(3),  KC_RSFT,  KC_CAPS,    TG(4)
   ),
   [2] = LAYOUT(
-    KC_GRV ,  KC_PIPE,  KC_BSLS,  _______,  _______,  _______,  _______,  SFT_TAB,   KC_TAB,  KC_LBRC,  KC_RBRC,   KC_DEL,
-    _______,  KC_PLUS,   KC_EQL,    KC_GT,  _______,  _______,  KC_LEFT,  KC_DOWN,    KC_UP, KC_RIGHT,  _______,  KC_CAPS,
+    _______,  _______,  _______,  KC_TILD,  KC_PIPE,  _______,  _______,  SFT_TAB,   KC_TAB,  KC_LBRC,  KC_RBRC,   KC_DEL,
+    _______,  KC_PLUS,   KC_EQL,  KC_MINS,  KC_BSLS,  _______,  KC_LEFT,  KC_DOWN,    KC_UP, KC_RIGHT,  _______,  KC_CAPS,
     _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
     _______,  _______,  _______,  _______,       _______     ,       _______     ,  _______,  _______,  CG_TOGG,    RESET
   ),
   [3] = LAYOUT(
     _______,  _______,  _______,  _______,  _______,  _______,  _______,     KC_7,     KC_8,     KC_9,     KC_0,  _______,
-    _______,  _______,  _______,  _______,  _______,  _______,  _______,     KC_4,     KC_5,     KC_6,  _______,  _______,
+    _______,  _______,  _______,  _______,  _______,  _______,   KC_GRV,     KC_4,     KC_5,     KC_6,  KC_QUOT,  _______,
     _______,  _______,  _______,  _______,  _______,  _______,   KC_DOT,     KC_1,     KC_2,     KC_3, KC_MS_UP,  _______,
     _______,  _______,  _______,  _______,       _______     ,       _______     ,  _______,KC_MS_LEFT,KC_MS_DOWN,  KC_MS_RIGHT
   ),

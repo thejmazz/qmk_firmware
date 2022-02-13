@@ -74,8 +74,6 @@ bool process_caps_word(uint16_t keycode, keyrecord_t* record) {
           // Deactivate if a mod becomes active through holding a mod-tap key.
           caps_word_set(false);
           return true;
-        } else if (record->tap.count) {
-          break;
         }
         keycode &= 0xff;
         break;

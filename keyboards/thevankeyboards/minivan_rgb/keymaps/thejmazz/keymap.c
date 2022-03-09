@@ -12,7 +12,8 @@
 
 enum custom_keycodes {
   M_IME = SAFE_RANGE,
-  M_LSFT
+  M_LSFT,
+  M_POMO
 };
 
 enum {
@@ -24,6 +25,9 @@ qk_tap_dance_action_t tap_dance_actions[] = {
 };
 
 uint16_t key_timer;
+bool pomo_active = false;
+uint16_t pomo_timer = 0;
+uint16_t pomo_minutes = 0;
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   if (!process_caps_word(keycode, record)) {
@@ -39,6 +43,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         key_timer = timer_read();
         register_code(KC_LSFT);
         return false;
+      case M_POMO:
+        pomo_active = !pomo_active;
+        if (pomo_active) {
+          pomo_timer = timer_read();
+        }
+        setrgb(255, 0, 0, (LED_TYPE *)&led[1]);
+        rgblight_set();
     }
   } else {
     switch(keycode) {
@@ -95,7 +106,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_GRV ,  KC_PIPE,  KC_BSLS,  _______,  _______,  _______,  _______,  SFT_TAB,   KC_TAB,  KC_LBRC,  KC_RBRC,   KC_DEL,
     _______,  KC_PLUS,   KC_EQL,    KC_GT,  _______,  _______,  KC_LEFT,  KC_DOWN,    KC_UP, KC_RIGHT,  _______,  KC_CAPS,
     _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
-    _______,  _______,  _______,  _______,       _______     ,       _______     ,  _______,  _______,  CG_TOGG,    RESET
+    _______,  _______,  _______,  _______,       _______     ,       _______     ,  _______,   M_POMO,  CG_TOGG,    RESET
   ),
   [3] = LAYOUT(
     _______,  _______,  _______,  _______,  _______,  _______,  _______,     KC_7,     KC_8,     KC_9,     KC_0,  _______,
@@ -120,6 +131,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 void process_indicator_update(layer_state_t state, uint8_t usb_led) {
   for (int i = 0; i < 3; i++) {
     setrgb(0, 0, 0, (LED_TYPE *)&led[i]);
+  }
+
+  if (pomo_active) {
+    setrgb(255, 0, 0, (LED_TYPE *)&led[1]);
   }
 
   setrgb(218, 23, 180, (LED_TYPE *)&led[0]);
@@ -177,3 +192,14 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
   }
 }
 
+void matrix_scan_user(void) {
+  if (pomo_active && timer_elapsed(pomo_timer) > 60000) {
+    pomo_minutes++;
+    pomo_timer = timer_read();
+
+    if (pomo_minutes >= 25) {
+      pomo_active = false;
+      process_indicator_update(layer_state, host_keyboard_leds());
+    }
+  }
+}

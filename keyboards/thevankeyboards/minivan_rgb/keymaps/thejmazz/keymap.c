@@ -8,6 +8,8 @@
 #define LT3_ENT LT(3, KC_ENT)
 #define T_SFT_QT RSFT_T(KC_QUOT)
 
+#define MOD_TAP_TAPPING_TERM 125
+
 enum custom_keycodes {
   M_IME = SAFE_RANGE,
   M_LSFT
@@ -45,7 +47,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         return false;
       case M_LSFT:
         unregister_code(KC_LSFT);
-        if (timer_elapsed(key_timer) < 125) {
+        if (timer_elapsed(key_timer) < MOD_TAP_TAPPING_TERM) {
           caps_word_set(!caps_word_get());
         }
         return false;
@@ -165,4 +167,13 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   process_indicator_update(state, host_keyboard_leds());
   return state;
 };
+
+uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+    case T_SFT_QT:
+      return MOD_TAP_TAPPING_TERM;
+    default:
+      return TAPPING_TERM;
+  }
+}
 
